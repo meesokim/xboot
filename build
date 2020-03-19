@@ -1,0 +1,15 @@
+#!/bin/bash
+CROSS_COMPILE="arm-none-eabi-"
+if [ "$1" == "k210" ]; then
+    CROSS_COMPILE="riscv64-unknown-elf-"
+    PLATFORM="riscv64-k210"
+elif [ "$1" == "f1c100s" ]; then
+    PLATFORM="arm32-$1"
+elif [ "$1" == "raspi2" ]; then
+    PLATFORM="arm32-$1"
+elif [ "$1" == "raspi3" ]; then
+    CROSS_COMPILE="aarch64-none-elf-"
+    PLATFORM="arm64-$1"
+fi
+echo ake CROSS_COMPILE="$CROSS_COMPILE" PLATFORM="$PLATFORM" $2
+make CROSS_COMPILE="$CROSS_COMPILE" PLATFORM="$PLATFORM" $2
