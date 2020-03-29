@@ -5,13 +5,13 @@
 
 struct rb_augment_callbacks {
 	void (*propagate)(struct rb_node *node, struct rb_node *stop);
-	void (*copy)(struct rb_node *old, struct rb_node *new);
-	void (*rotate)(struct rb_node *old, struct rb_node *new);
+	void (*copy)(struct rb_node *old, struct rb_node *new_node);
+	void (*rotate)(struct rb_node *old, struct rb_node *new_node);
 };
 
 extern void __rb_insert_augmented(struct rb_node * node, struct rb_root * root,
 	int newleft, struct rb_node ** leftmost,
-	void (*augment_rotate)(struct rb_node * old, struct rb_node * new));
+	void (*augment_rotate)(struct rb_node * old, struct rb_node * new_node));
 
 static inline void rb_insert_augmented(struct rb_node * node, struct rb_root * root, const struct rb_augment_callbacks * augment)
 {
@@ -41,15 +41,15 @@ static inline void													\
 rbname ## _copy(struct rb_node *rb_old, struct rb_node *rb_new)		\
 {																	\
 	rbstruct *old = rb_entry(rb_old, rbstruct, rbfield);			\
-	rbstruct *new = rb_entry(rb_new, rbstruct, rbfield);			\
-	new->rbaugmented = old->rbaugmented;							\
+	rbstruct *new_node = rb_entry(rb_new, rbstruct, rbfield);			\
+	new_node->rbaugmented = old->rbaugmented;							\
 }																	\
 static void															\
 rbname ## _rotate(struct rb_node *rb_old, struct rb_node *rb_new)	\
 {																	\
 	rbstruct *old = rb_entry(rb_old, rbstruct, rbfield);			\
-	rbstruct *new = rb_entry(rb_new, rbstruct, rbfield);			\
-	new->rbaugmented = old->rbaugmented;							\
+	rbstruct *new_node = rb_entry(rb_new, rbstruct, rbfield);			\
+	new_node->rbaugmented = old->rbaugmented;							\
 	old->rbaugmented = rbcompute(old);								\
 }																	\
 rbstatic const struct rb_augment_callbacks rbname = {				\
@@ -79,20 +79,20 @@ static inline void rb_set_parent_color(struct rb_node * rb, struct rb_node * p, 
 	rb->__rb_parent_color = (unsigned long)p | color;
 }
 
-static inline void __rb_change_child(struct rb_node * old, struct rb_node * new,
+static inline void __rb_change_child(struct rb_node * old, struct rb_node * new_node,
 	struct rb_node * parent, struct rb_root * root)
 {
 	if (parent) {
 		if (parent->rb_left == old)
-			parent->rb_left = new;
+			parent->rb_left = new_node;
 		else
-			parent->rb_right = new;
+			parent->rb_right = new_node;
 	} else
-		root->rb_node = new;
+		root->rb_node = new_node;
 }
 
 extern void __rb_erase_color(struct rb_node * parent, struct rb_root * root,
-	void (*augment_rotate)(struct rb_node * old, struct rb_node * new));
+	void (*augment_rotate)(struct rb_node * old, struct rb_node * new_node));
 
 static inline __attribute__((always_inline)) struct rb_node *
 __rb_erase_augmented(struct rb_node * node, struct rb_root * root,

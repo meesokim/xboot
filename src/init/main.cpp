@@ -26,6 +26,7 @@
  *
  */
 
+extern "C" {
 #include <xboot.h>
 #include <init.h>
 
@@ -65,4 +66,5 @@ void xboot_main(void)
 
 	/* Do all exit calls */
 	do_exitcalls();
+}
 }

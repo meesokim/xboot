@@ -1,0 +1,2 @@
+#!/bin/bash
+make CROSS_COMPILE=arm-none-eabi- PLATFORM=arm32-f1c100s $@

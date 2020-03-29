@@ -46,9 +46,9 @@ static inline int region_contains(struct region_t * r, struct region_t * o)
 {
 	int rr = r->x + r->w;
 	int rb = r->y + r->h;
-	int or = o->x + o->w;
+	int orr = o->x + o->w;
 	int ob = o->y + o->h;
-	if((o->x >= r->x) && (o->x < rr) && (o->y >= r->y) && (o->y < rb) && (or > r->x) && (or <= rr) && (ob > r->y) && (ob <= rb))
+	if((o->x >= r->x) && (o->x < rr) && (o->y >= r->y) && (o->y < rb) && (orr > r->x) && (orr <= rr) && (ob > r->y) && (ob <= rb))
 		return 1;
 	return 0;
 }

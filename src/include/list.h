@@ -36,14 +36,14 @@ static inline void init_list_head(struct list_head * list)
  * This is only for internal list manipulation where we know
  * the prev/next entries already!
  */
-static inline void __list_add(struct list_head * new,
+static inline void __list_add(struct list_head * newlst,
 			      struct list_head * prev,
 			      struct list_head * next)
 {
-	next->prev = new;
-	new->next = next;
-	new->prev = prev;
-	prev->next = new;
+	next->prev = newlst;
+	newlst->next = next;
+	newlst->prev = prev;
+	prev->next = newlst;
 }
 
 /**
@@ -54,9 +54,9 @@ static inline void __list_add(struct list_head * new,
  * Insert a new entry after the specified head.
  * This is good for implementing stacks.
  */
-static inline void list_add(struct list_head * new, struct list_head * head)
+static inline void list_add(struct list_head * newlst, struct list_head * head)
 {
-	__list_add(new, head, head->next);
+	__list_add(newlst, head, head->next);
 }
 
 /**
@@ -67,9 +67,9 @@ static inline void list_add(struct list_head * new, struct list_head * head)
  * Insert a new entry before the specified head.
  * This is useful for implementing queues.
  */
-static inline void list_add_tail(struct list_head * new, struct list_head * head)
+static inline void list_add_tail(struct list_head * newlst, struct list_head * head)
 {
-	__list_add(new, head->prev, head);
+	__list_add(newlst, head->prev, head);
 }
 
 /*
@@ -111,18 +111,18 @@ static inline void list_del(struct list_head *entry)
  * If @old was empty, it will be overwritten.
  */
 static inline void list_replace(struct list_head * old,
-				struct list_head * new)
+				struct list_head * newlst)
 {
-	new->next = old->next;
-	new->next->prev = new;
-	new->prev = old->prev;
-	new->prev->next = new;
+	newlst->next = old->next;
+	newlst->next->prev = newlst;
+	newlst->prev = old->prev;
+	newlst->prev->next = newlst;
 }
 
 static inline void list_replace_init(struct list_head * old,
-					struct list_head * new)
+					struct list_head * newlst)
 {
-	list_replace(old, new);
+	list_replace(old, newlst);
 	init_list_head(old);
 }
 
@@ -790,11 +790,11 @@ static inline int hlist_is_singular_node(struct hlist_node * n, struct hlist_hea
  * reference of the first entry if it exists.
  */
 static inline void hlist_move_list(struct hlist_head * old,
-				   struct hlist_head * new)
+				   struct hlist_head * newlst)
 {
-	new->first = old->first;
-	if(new->first)
-		new->first->pprev = &new->first;
+	newlst->first = old->first;
+	if(newlst->first)
+		newlst->first->pprev = &newlst->first;
 	old->first = NULL;
 }
 

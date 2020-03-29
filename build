@@ -10,6 +10,9 @@ elif [ "$1" == "raspi2" ]; then
 elif [ "$1" == "raspi3" ]; then
     CROSS_COMPILE="aarch64-none-elf-"
     PLATFORM="arm64-$1"
+elif [ "$1" == "sandbox" ]; then
+    CROSS_COMPILE=""
+    PLATFORM="x64-$1"
 fi
-echo ake CROSS_COMPILE="$CROSS_COMPILE" PLATFORM="$PLATFORM" $2
+echo make CROSS_COMPILE="$CROSS_COMPILE" PLATFORM="$PLATFORM" $2
 make CROSS_COMPILE="$CROSS_COMPILE" PLATFORM="$PLATFORM" $2

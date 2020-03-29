@@ -75,7 +75,7 @@ FILE * freopen(const char * path, const char * mode, FILE * f);
 int fclose(FILE * f);
 
 int remove(const char * path);
-int rename(const char * old, const char * new);
+int rename(const char * old, const char * newstr);
 int system(const char * cmd);
 
 int feof(FILE * f);

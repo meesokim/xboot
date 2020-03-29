@@ -285,10 +285,13 @@ X_OTHERS	:=	$(filter-out arch/%, $(X_SRCDIRS))
 
 X_SFILES	:=	$(foreach dir, $(X_ARCHS), $(wildcard $(dir)/*.S))
 X_CFILES	:=	$(foreach dir, $(X_ARCHS), $(wildcard $(dir)/*.c))
+X_PFILES	:=	$(foreach dir, $(X_ARCHS), $(wildcard $(dir)/*.cpp))
 
 X_SOBJS		:=	$(patsubst %, .obj/%, $(X_SFILES:.S=.o))
 X_COBJS		:=	$(patsubst %, .obj/%, $(X_CFILES:.c=.o))
-X_OBJS		:=	$(X_SOBJS) $(X_COBJS) $(foreach dir, $(X_OTHERS), .obj/$(dir)/built-in.o)
+X_POBJS		:=	$(patsubst %, .obj/%, $(X_PFILES:.cpp=.o))
+
+X_OBJS		:=	$(X_SOBJS) $(X_COBJS) $(X_POBJS) $(foreach dir, $(X_OTHERS), .obj/$(dir)/built-in.o)
 
 .PHONY: all clean romdisk xbegin xend xclean $(X_NAME) $(X_ARCHS) $(X_OTHERS)
 export AS CC LD X_ASFLAGS X_CFLAGS X_INCDIRS
@@ -303,6 +306,8 @@ xend : $(X_NAME)
 $(X_NAME) : $(X_OBJS)
 	@echo [LD] Linking $@
 	@$(CC) $(X_LDFLAGS) $(X_LIBDIRS) -Wl,--cref,-Map=$@.map $^ -o $@ $(X_LIBS)
+	@echo [OD] Dump $@
+	@$(OD) -d $@ > $@.lst
 	@echo [OC] Objcopying $@.bin
 	@$(OC) -v -O binary $@ $@.bin
 
