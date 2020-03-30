@@ -2,4 +2,4 @@
 if [ -z "$disk" ]; then
     disk=b
 fi
-sudo dd if=output/xboot.bin of=/dev/sdb bs=1024 seek=8
+sudo dd if=output/xboot.bin of=/dev/sd$disk bs=1024 seek=8

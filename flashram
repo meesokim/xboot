@@ -1,0 +1,3 @@
+sudo sunxi-fel spl output/xboot.bin
+sudo sunxi-fel -p write 0x80000000 output/xboot.bin
+sudo sunxi-fel exec 0x80000000;

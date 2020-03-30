@@ -30,7 +30,7 @@ $(SOBJS) : .obj/%.o : %.S
 	@$(AS) $(X_ASFLAGS) -MD -MP -MF $@.d $(X_INCDIRS) -c $< -o $@
 
 $(COBJS) : .obj/%.o : %.c
-	@echo [CC] $@ $<
+	@echo [CC] $<
 	@$(CC) $(X_CFLAGS) -MD -MP -MF $@.d $(X_INCDIRS) -c $< -o $@
 
 $(POBJS) : .obj/%.o : %.cpp

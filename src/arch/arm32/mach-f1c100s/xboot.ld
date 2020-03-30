@@ -42,6 +42,13 @@ SECTIONS
 	} > ram
 	PROVIDE(__spl_size = __spl_end - __spl_start);
 
+    .init_array : {
+        __init_array_start = ABSOLUTE(.);;
+        *(.init_array)
+        *(SORT_BY_INIT_PRIORITY(.init_array.*))
+        __init_array_end = ABSOLUTE(.);;
+    } > ram	
+
 	.ARM.exidx ALIGN(8) :
 	{
 		PROVIDE (__exidx_start = .);
