@@ -35,6 +35,6 @@ $(COBJS) : .obj/%.o : %.c
 
 $(POBJS) : .obj/%.o : %.cpp
 	@echo [CXX] $<
-	@$(CROSS_COMPILE)$(CXX) $(X_CFLAGS) -MD -MP -MF $@.d $(X_INCDIRS) -c $< -o $@
+	@$(CROSS_COMPILE)$(CXX) $(X_CXXFLAGS) -MD -MP -MF $@.d $(X_INCDIRS) -c $< -o $@
 
 sinclude $(DEPS)

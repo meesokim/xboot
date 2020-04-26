@@ -5,6 +5,8 @@ if [ "$1" == "k210" ]; then
     PLATFORM="riscv64-k210"
 elif [ "$1" == "f1c100s" ]; then
     PLATFORM="arm32-$1"
+elif [ "$1" == "raspi" ]; then
+    PLATFORM="arm32-$1"
 elif [ "$1" == "raspi2" ]; then
     PLATFORM="arm32-$1"
 elif [ "$1" == "raspi3" ]; then

@@ -65,8 +65,11 @@ ifeq ($(strip $(ARCH)), x64)
 DEFINES		+=	-D__X64__
 endif
 
+DEFINES     +=  -DVFS
+
 ASFLAGS		+=	-ffunction-sections -fdata-sections -ffreestanding -std=gnu99 $(DEFINES)
 CFLAGS		+=	-ffunction-sections -fdata-sections -ffreestanding -std=gnu99 $(DEFINES)
+CXXFLAGS	+=	-ffunction-sections -fdata-sections -ffreestanding $(DEFINES)
 LDFLAGS		+=	-Wl,-gc-sections
 
 #
@@ -74,7 +77,8 @@ LDFLAGS		+=	-Wl,-gc-sections
 #
 INCDIRS		+=	include \
 				arch/$(ARCH)/include \
-				arch/$(ARCH)/$(MACH)/include
+				arch/$(ARCH)/$(MACH)/include \
+				rpmp
 
 SRCDIRS		+=	arch/$(ARCH)/lib/cpu \
 				arch/$(ARCH)/lib \
