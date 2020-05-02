@@ -36,6 +36,7 @@ endif
 #
 ASFLAGS			:= -g -ggdb -Wall -O0
 CFLAGS			:= -g -ggdb -Wall -O0
+CXXFLAGS		:= -g -ggdb -Wall -O0
 LDFLAGS			:= -T arch/$(ARCH)/$(MACH)/xboot.ld -nostdlib
 MCFLAGS			:=
 
@@ -69,8 +70,8 @@ DEFINES     +=  -DVFS
 
 ASFLAGS		+=	-ffunction-sections -fdata-sections -ffreestanding -std=gnu99 $(DEFINES)
 CFLAGS		+=	-ffunction-sections -fdata-sections -ffreestanding -std=gnu99 $(DEFINES)
-CXXFLAGS	+=	-ffunction-sections -fdata-sections -ffreestanding $(DEFINES)
-LDFLAGS		+=	-Wl,-gc-sections
+CXXFLAGS	+=	-ffunction-sections -fdata-sections -ffreestanding $(DEFINES) -fno-exceptions -fno-unwind-tables -fno-rtti
+LDFLAGS		+=	-Wl,-gc-sections -lstdc++ 
 
 #
 # Add necessary directory for INCDIRS and SRCDIRS.
@@ -274,6 +275,7 @@ CPIO		:=	cpio -o -H newc --quiet
 #
 X_ASFLAGS	:=	$(MCFLAGS) $(ASFLAGS)
 X_CFLAGS	:=	$(MCFLAGS) $(CFLAGS)
+X_CXXFLAGS  	:=  	$(MCFLAGS) $(CXXFLAGS) 
 X_LDFLAGS	:=	$(LDFLAGS)
 X_LIBS		:=	$(LIBS) -lgcc
 
@@ -298,7 +300,7 @@ X_POBJS		:=	$(patsubst %, .obj/%, $(X_PFILES:.cpp=.o))
 X_OBJS		:=	$(X_SOBJS) $(X_COBJS) $(X_POBJS) $(foreach dir, $(X_OTHERS), .obj/$(dir)/built-in.o)
 
 .PHONY: all clean romdisk xbegin xend xclean $(X_NAME) $(X_ARCHS) $(X_OTHERS)
-export AS CC LD X_ASFLAGS X_CFLAGS X_INCDIRS
+export AS CC LD X_ASFLAGS X_CFLAGS X_CXXFLAGS X_INCDIRS X_OBJS
 
 #
 # Xboot rules
@@ -309,7 +311,7 @@ xend : $(X_NAME)
 
 $(X_NAME) : $(X_OBJS)
 	@echo [LD] Linking $@
-	@$(CC) $(X_LDFLAGS) $(X_LIBDIRS) -Wl,--cref,-Map=$@.map $^ -o $@ $(X_LIBS)
+	@$(CXX) $(X_LDFLAGS) $(X_LIBDIRS) -Wl,--cref,-Map=$@.map -lstdc++ $^ -o $@ $(X_LIBS)
 	@echo [OD] Dump $@
 	@$(OD) -d $@ > $@.lst
 	@echo [OC] Objcopying $@.bin
