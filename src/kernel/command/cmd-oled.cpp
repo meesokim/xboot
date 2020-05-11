@@ -20,13 +20,13 @@ static int do_oled(int argc, char ** argv)
 {
 	if(argc < 3)
 	{
-        Adafruit_SSD1306 oled(0);
-        oled.begin(SSD1306_SWITCHCAPVCC, 0x3C);
-		usage();
-        oled.display();
+        I2C i2c;
+        Adafruit_SSD1306_I2c oled(i2c, 1, 0x3c);
+        oled.begin(SSD1306_SWITCHCAPVCC);
         oled.clearDisplay();
         oled.drawPixel(10, 10, WHITE);
         oled.display();
+		usage();
         cairo_surface_t *surface;
         cairo_t *cr;
 
