@@ -250,27 +250,7 @@
 		"scl-gpio": 139,
 		"scl-gpio-config": 3
 	},
-
-	"i2c-f1c100s@0x01c27400": {
-		"clock-name": "link-i2c1",
-		"clock-frequency": 400000,
-		"reset": 81,
-		"sda-gpio": 102,
-		"sda-gpio-config": 3,
-		"scl-gpio": 101,
-		"scl-gpio-config": 3
-	},
-
-	"i2c-f1c100s@0x01c27800": {
-		"clock-name": "link-i2c2",
-		"clock-frequency": 400000,
-		"reset": 82,
-		"sda-gpio": 129,
-		"sda-gpio-config": 4,
-		"scl-gpio": 128,
-		"scl-gpio-config": 4
-	},
-
+	
 	"uart-16550@0x01c25000": {
 		"clock-name": "link-uart0",
 		"reset": 84,

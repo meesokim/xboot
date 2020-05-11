@@ -12,7 +12,7 @@ typedef union {
 
 static inline ktime_t ktime_set(const s64_t s, const unsigned long ns)
 {
-	if((s >= KTIME_SEC_MAX))
+	if((s >= (s64_t) KTIME_SEC_MAX))
 		return (ktime_t) { .tv64 = KTIME_MAX };
 	return (ktime_t) { .tv64 = (s64_t)s * 1000000000ULL + (s64_t)ns };
 }

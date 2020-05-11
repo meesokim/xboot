@@ -36,7 +36,7 @@ endif
 #
 ASFLAGS			:= -g -ggdb -Wall -O0
 CFLAGS			:= -g -ggdb -Wall -O0
-CXXFLAGS		:= -g -ggdb -Wall -O0
+CXXFLAGS		:= -g -ggdb -Wall -O0 -Wnarrowing
 LDFLAGS			:= -T arch/$(ARCH)/$(MACH)/xboot.ld -nostdlib
 MCFLAGS			:=
 
@@ -237,6 +237,10 @@ SRCDIRS		+=	external/cairo-1.17.2
 INCDIRS		+=	external/chipmunk-7.0.3/include
 SRCDIRS		+=	external/chipmunk-7.0.3/src
 
+INCDIRS		+=  external/adafruit-gfx-library
+SRCDIRS		+=  external/adafruit-gfx-library
+
+
 #
 # Add whitebox test
 #
@@ -275,7 +279,7 @@ CPIO		:=	cpio -o -H newc --quiet
 #
 X_ASFLAGS	:=	$(MCFLAGS) $(ASFLAGS)
 X_CFLAGS	:=	$(MCFLAGS) $(CFLAGS)
-X_CXXFLAGS  	:=  	$(MCFLAGS) $(CXXFLAGS) 
+X_CXXFLAGS  :=  $(MCFLAGS) $(CXXFLAGS) 
 X_LDFLAGS	:=	$(LDFLAGS)
 X_LIBS		:=	$(LIBS) -lgcc
 
