@@ -13,6 +13,8 @@ extern "C" {
 
 #if (defined(__GNUC__) && (__GNUC__ >= 4))
 #define offsetof(type, member)	__builtin_offsetof(type, member)
+#define clamp(v, a, b)	min(max(a, v), b)
+
 #else
 #define offsetof(type, field)	((size_t)(&((type *)0)->field))
 #endif

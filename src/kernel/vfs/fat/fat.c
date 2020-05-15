@@ -36,6 +36,7 @@ static int fatfs_mount(struct vfs_mount_t * m, const char * dev)
 	struct fatfs_node_t * root;
 	int rc;
 
+	printf("fatfs_mount:dev=%s\r\n");
 	if(dev == NULL)
 		return -1;
 
@@ -44,16 +45,19 @@ static int fatfs_mount(struct vfs_mount_t * m, const char * dev)
 		return -1;
 
 	/* Setup control info */
+	printf("fatfs_control_init\r\n");
 	rc = fatfs_control_init(ctrl, m->m_dev);
 	if(rc)
 		goto fail;
 
 	/* Get the root fatfs node */
 	root = m->m_root->v_data;
+	printf("fatfs_node_init\r\n");
 	rc = fatfs_node_init(ctrl, root);
 	if(rc)
 		goto fail;
 
+	printf("Handcraft the root fatfs node\r\n");
 	/* Handcraft the root fatfs node */
 	root->parent = NULL;
 	root->parent_dent_off = 0;

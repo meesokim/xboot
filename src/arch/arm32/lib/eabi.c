@@ -8,9 +8,12 @@ int raise(int signal)
 	return 0;
 }
 
+// multiple definition of `__aeabi_unwind_cpp_pr0'; .obj/arch/arm32/lib/eabi.o:/home/msx/xboot/src/arch/arm32/lib/eabi.c:13: first defined here
+#if 0
 void __aeabi_unwind_cpp_pr0(void)
 {
 }
+#endif
 
 void __aeabi_unwind_cpp_pr1(void)
 {

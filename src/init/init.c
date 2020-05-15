@@ -144,6 +144,7 @@ void do_automount(void)
 	list_for_each_entry_safe(dpos, dn, &__device_head[DEVICE_TYPE_BLOCK], head)
 	{
 		cnt = vfs_mount_count();
+//		printf("vfs_mount_count:%d\r\n", cnt);
 		for(i = 0, found = 0; i < cnt; i++)
 		{
 			m = vfs_mount_get(i);
@@ -156,11 +157,13 @@ void do_automount(void)
 		if(!found)
 		{
 			sprintf(fpath, "/storage/%s", dpos->name);
+//			printf("automount: %s\r\n", fpath);
 			if(vfs_stat(fpath, &st) < 0)
 				vfs_mkdir(fpath, 0755);
 			mounted = 0;
 			list_for_each_entry_safe(fpos, fn, &__filesystem_list, list)
 			{
+//				printf("vfs_mount: %s, %s, %s\r\n", dpos->name, fpath, fpos->name);
 				if(vfs_mount(dpos->name, fpath, fpos->name, MOUNT_RW) == 0)
 				{
 					mounted = 1;

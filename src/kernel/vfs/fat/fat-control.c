@@ -638,6 +638,7 @@ int fatfs_control_init(struct fatfs_control_t * ctrl, struct block_t * bdev)
 	struct fat_bootsec_t *bsec = &ctrl->bsec;
 
 	/* Read boot sector from block device */
+	printf("block_read\r\n");
 	rlen = block_read(bdev, (u8_t *) bsec,
 	FAT_BOOTSECTOR_OFFSET, sizeof(struct fat_bootsec_t));
 	if(rlen != sizeof(struct fat_bootsec_t))
@@ -647,9 +648,11 @@ int fatfs_control_init(struct fatfs_control_t * ctrl, struct block_t * bdev)
 	ctrl->bdev = bdev;
 
 	/* Get bytes_per_sector and sector_per_cluster */
+//	printf("le16_to_cpu\r\n");
 	ctrl->bytes_per_sector = le16_to_cpu(bsec->bytes_per_sector);
 	ctrl->sectors_per_cluster = bsec->sectors_per_cluster;
 
+//	printf("bytes_per_sector,cluster:%d,%d\r\n");
 	/* Sanity check bytes_per_sector and sector_per_cluster */
 	if(!ctrl->bytes_per_sector || !ctrl->sectors_per_cluster)
 		return -1;
@@ -684,6 +687,7 @@ int fatfs_control_init(struct fatfs_control_t * ctrl, struct block_t * bdev)
 		ctrl->type = FAT_TYPE_32;
 
 	/* FAT type sanity check */
+	printf("FAT type:%d\r\n", ctrl->type);
 	switch(ctrl->type)
 	{
 	case FAT_TYPE_12:

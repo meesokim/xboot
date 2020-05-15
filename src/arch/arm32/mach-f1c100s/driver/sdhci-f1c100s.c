@@ -213,13 +213,14 @@ static bool_t f1c100s_transfer_command(struct sdhci_f1c100s_pdata_t * pdat, stru
 
 	if(cmd->cmdidx == MMC_STOP_TRANSMISSION)
 	{
-		timeout = 10000;
+		timeout = 20000;
 		do {
 			status = read32(pdat->virt + SD_STAR);
 			if(!timeout--)
 			{
 				write32(pdat->virt + SD_GCTL, SDXC_HARDWARE_RESET);
 				write32(pdat->virt + SD_RISR, 0xffffffff);
+				LOG("f1c100s_transfer_command:timeout");
 				return FALSE;
 			}
 		} while(status & SDXC_CARD_DATA_BUSY);
@@ -252,26 +253,28 @@ static bool_t f1c100s_transfer_command(struct sdhci_f1c100s_pdata_t * pdat, stru
 		write32(pdat->virt + SD_GCTL, read32(pdat->virt + SD_GCTL) | 0x80000000);
 	write32(pdat->virt + SD_CMDR, cmdval | cmd->cmdidx);
 
-	timeout = 10000;
+	timeout = 20000;
 	do {
 		status = read32(pdat->virt + SD_RISR);
 		if(!timeout-- || (status & SDXC_INTERRUPT_ERROR_BIT))
 		{
 			write32(pdat->virt + SD_GCTL, SDXC_HARDWARE_RESET);
 			write32(pdat->virt + SD_RISR, 0xffffffff);
+			LOG("f1c100s_transfer_command:timeout");
 			return FALSE;
 		}
 	} while(!(status & SDXC_COMMAND_DONE));
 
 	if(cmd->resptype & MMC_RSP_BUSY)
 	{
-		timeout = 10000;
+		timeout = 20000;
 		do {
 			status = read32(pdat->virt + SD_STAR);
 			if(!timeout--)
 			{
 				write32(pdat->virt + SD_GCTL, SDXC_HARDWARE_RESET);
 				write32(pdat->virt + SD_RISR, 0xffffffff);
+				LOG("f1c100s_transfer_command:timeout");
 				return FALSE;
 			}
 		} while(status & (1 << 9));
@@ -289,6 +292,7 @@ static bool_t f1c100s_transfer_command(struct sdhci_f1c100s_pdata_t * pdat, stru
 		cmd->response[0] = read32(pdat->virt + SD_RESP0);
 	}
 	write32(pdat->virt + SD_RISR, 0xffffffff);
+//	LOG("sdhci_transfer_completed");
 	return TRUE;
 }
 
@@ -297,6 +301,8 @@ static bool_t read_bytes(struct sdhci_f1c100s_pdata_t * pdat, u32_t * buf, u32_t
 	u64_t count = blkcount * blksize;
 	u32_t * tmp = buf;
 	u32_t status, err, done;
+	u32_t cnt = count;
+	u8_t *cbuf = (u8_t *)buf;
 
 	status = read32(pdat->virt + SD_STAR);
 	err = read32(pdat->virt + SD_RISR) & SDXC_INTERRUPT_ERROR_BIT;
@@ -324,7 +330,12 @@ static bool_t read_bytes(struct sdhci_f1c100s_pdata_t * pdat, u32_t * buf, u32_t
 	if(err & SDXC_INTERRUPT_ERROR_BIT)
 		return FALSE;
 	write32(pdat->virt + SD_RISR, 0xffffffff);
-
+#if 0
+	cnt = (cnt - count) * 4;
+	for(int i=0; i < cnt; i++)
+		printf("%02x,", *(cbuf+i));
+	printf("\r\n");
+#endif	
 	if(count)
 		return FALSE;
 	return TRUE;
@@ -405,6 +416,7 @@ static bool_t sdhci_f1c100s_reset(struct sdhci_t * sdhci)
 	struct sdhci_f1c100s_pdata_t * pdat = (struct sdhci_f1c100s_pdata_t *)sdhci->priv;
 
 	write32(pdat->virt + SD_GCTL, SDXC_HARDWARE_RESET);
+	udelay(1000);
 	return TRUE;
 }
 
@@ -423,10 +435,10 @@ static bool_t sdhci_f1c100s_setwidth(struct sdhci_t * sdhci, u32_t width)
 		write32(pdat->virt + SD_BWDR, SDXC_WIDTH1);
 		break;
 	case MMC_BUS_WIDTH_4:
-		write32(pdat->virt + SD_BWDR, SDXC_WIDTH4);
-		break;
 	case MMC_BUS_WIDTH_8:
-		write32(pdat->virt + SD_BWDR, SDXC_WIDTH8);
+		write32(pdat->virt + SD_BWDR, SDXC_WIDTH4);
+//		break;
+//		write32(pdat->virt + SD_BWDR, SDXC_WIDTH8);
 		break;
 	default:
 		return FALSE;
@@ -437,12 +449,15 @@ static bool_t sdhci_f1c100s_setwidth(struct sdhci_t * sdhci, u32_t width)
 static bool_t sdhci_f1c100s_update_clk(struct sdhci_f1c100s_pdata_t * pdat)
 {
 	u32_t cmd = (1U << 31) | (1 << 21) | (1 << 13);
-	int timeout = 10000;
+	int timeout = 20000;
 
 	write32(pdat->virt + SD_CMDR, cmd);
 	while((read32(pdat->virt + SD_CMDR) & 0x80000000) && timeout--);
 	if(!timeout)
+	{
+		LOG("sdhci_f1c100s_update_clk:timeout");
 		return FALSE;
+	}
 	write32(pdat->virt + SD_RISR, read32(pdat->virt + SD_RISR));
 	return TRUE;
 }
@@ -524,7 +539,7 @@ static struct device_t * sdhci_f1c100s_probe(struct driver_t * drv, struct dtnod
 	sdhci->voltage = MMC_VDD_27_36;
 	sdhci->width = MMC_BUS_WIDTH_4;
 	sdhci->clock = (u32_t)dt_read_long(n, "max-clock-frequency", 25 * 1000 * 1000);
-	sdhci->removable = (pdat->cd >= 0) ? TRUE : FALSE;
+	sdhci->removable = dt_read_int(n, "removable", -1) > 0 ? TRUE : FALSE;
 	sdhci->isspi = FALSE;
 	sdhci->detect = sdhci_f1c100s_detect;
 	sdhci->reset = sdhci_f1c100s_reset;

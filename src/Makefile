@@ -37,11 +37,11 @@ endif
 ASFLAGS			:= -g -ggdb -Wall -O0
 CFLAGS			:= -g -ggdb -Wall -O0
 CXXFLAGS		:= -g -ggdb -Wall -O0 -Wnarrowing
-LDFLAGS			:= -T arch/$(ARCH)/$(MACH)/xboot.ld -nostdlib
+LDFLAGS			:= -T arch/$(ARCH)/$(MACH)/xboot.ld
 MCFLAGS			:=
 
-LIBDIRS			:=
-LIBS 			:=
+LIBDIRS			:= 
+LIBS 			:= 
 INCDIRS			:=
 SRCDIRS			:=
 
@@ -66,12 +66,10 @@ ifeq ($(strip $(ARCH)), x64)
 DEFINES		+=	-D__X64__
 endif
 
-DEFINES     +=  -DVFS
-
 ASFLAGS		+=	-ffunction-sections -fdata-sections -ffreestanding -std=gnu99 $(DEFINES)
-CFLAGS		+=	-ffunction-sections -fdata-sections -ffreestanding -std=gnu99 $(DEFINES)
-CXXFLAGS	+=	-ffunction-sections -fdata-sections -ffreestanding $(DEFINES) -fno-exceptions -fno-unwind-tables -fno-rtti
-LDFLAGS		+=	-Wl,-gc-sections -lstdc++ 
+CFLAGS		+=	-O2 -marm -ffunction-sections -fdata-sections -ffreestanding -std=gnu99 $(DEFINES)
+CXXFLAGS	+=	-O2 -marm -ffreestanding $(DEFINES) -fno-exceptions -fno-unwind-tables -fno-rtti -std=c++11 
+LDFLAGS		+=	-Wl,-gc-sections
 
 #
 # Add necessary directory for INCDIRS and SRCDIRS.
@@ -237,8 +235,8 @@ SRCDIRS		+=	external/cairo-1.17.2
 INCDIRS		+=	external/chipmunk-7.0.3/include
 SRCDIRS		+=	external/chipmunk-7.0.3/src
 
-INCDIRS		+=  external/adafruit-gfx-library
-SRCDIRS		+=  external/adafruit-gfx-library
+INCDIRS		+=  	external/adafruit-gfx
+SRCDIRS		+=  	external/adafruit-gfx
 
 
 #
@@ -281,7 +279,7 @@ X_ASFLAGS	:=	$(MCFLAGS) $(ASFLAGS)
 X_CFLAGS	:=	$(MCFLAGS) $(CFLAGS)
 X_CXXFLAGS  :=  $(MCFLAGS) $(CXXFLAGS) 
 X_LDFLAGS	:=	$(LDFLAGS)
-X_LIBS		:=	$(LIBS) -lgcc
+X_LIBS		:=	$(LIBS) -lstdc++ -lgcc
 
 X_OUT		:=	../output
 X_NAME		:=	$(patsubst %, $(X_OUT)/%, xboot)
@@ -307,7 +305,7 @@ X_OBJS		:=	$(X_SOBJS) $(X_COBJS) $(X_POBJS) $(foreach dir, $(X_OTHERS), .obj/$(d
 export AS CC LD X_ASFLAGS X_CFLAGS X_CXXFLAGS X_INCDIRS X_OBJS
 
 #
-# Xboot rules
+# Xboot rules	
 #
 all : xend
 
@@ -315,7 +313,8 @@ xend : $(X_NAME)
 
 $(X_NAME) : $(X_OBJS)
 	@echo [LD] Linking $@
-	@$(CXX) $(X_LDFLAGS) $(X_LIBDIRS) -Wl,--cref,-Map=$@.map -lstdc++ $^ -o $@ $(X_LIBS)
+#	echo $(CXX) $(X_LDFLAGS) $(X_LIBDIRS) -Wl,--cref,-Map=$@.map $^ -o $@ $(X_LIBS)
+	@$(CXX) $(X_LDFLAGS) $(X_LIBDIRS) -Wl,--cref,-Map=$@.map $^ -o $@ $(X_LIBS) 
 	@echo [OD] Dump $@
 	@$(OD) -d $@ > $@.lst
 	@echo [OC] Objcopying $@.bin

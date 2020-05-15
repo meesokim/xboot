@@ -102,6 +102,7 @@ struct device_t * register_block(struct block_t * blk, struct driver_t * drv)
 	dev->driver = drv;
 	dev->priv = blk;
 	dev->kobj = kobj_alloc_directory(dev->name);
+	LOG("block name, size, cnt:%s,%d,%d\r\n", blk->name, blk->blksz, blk->blkcnt);
 	kobj_add_regular(dev->kobj, "size", block_read_size, NULL, blk);
 	kobj_add_regular(dev->kobj, "count", block_read_count, NULL, blk);
 	kobj_add_regular(dev->kobj, "capacity", block_read_capacity, NULL, blk);
@@ -229,6 +230,7 @@ u64_t block_read(struct block_t * blk, u8_t * buf, u64_t offset, u64_t count)
 		return 0;
 
 	capacity = block_capacity(blk);
+//	printf("block_size,count,capacity:%d,%d,%d\r\n", blksz, blkcnt, capacity);
 	if(offset >= capacity)
 		return 0;
 

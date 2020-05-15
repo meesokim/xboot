@@ -1,2 +1,8 @@
 #!/bin/bash
+BINSTAT="ls -l output/xboot.bin"
+BIN=`$BINSTAT`
 make CROSS_COMPILE=arm-none-eabi- PLATFORM=arm32-f1c100s $@
+BIN1=`$BINSTAT`
+if [[ -n $BIN1 ]] && [[ $BIN != $BIN1 ]]; then
+   ./check
+fi

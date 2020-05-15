@@ -719,6 +719,7 @@ static void sdcard_scan(struct sdcard_pdata_t * pdat)
 {
 	char buf[256];
 
+	LOG("sdcard_scan");
 	if(!pdat->online)
 	{
 		if(sdhci_detect(pdat->hci))
@@ -781,6 +782,7 @@ void * sdcard_probe(struct sdhci_t * hci)
 	sdcard_scan(pdat);
 	if(pdat->hci->removable)
 	{
+		LOG("sdcard_probe:removable");
 		timer_init(&pdat->timer, sdcard_timer_function, pdat);
 		timer_start_now(&pdat->timer, ms_to_ktime(2000));
 	}

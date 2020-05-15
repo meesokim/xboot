@@ -572,6 +572,7 @@ int vfs_mount(const char * dev, const char * dir, const char * fsname, u32_t fla
 	if(!(fs = search_filesystem(fsname)))
 		return -1;
 
+//	printf("search_block:%s\r\n", dev);
 	if(dev != NULL)
 	{
 		if(!(bdev = search_block(dev)))
@@ -582,6 +583,7 @@ int vfs_mount(const char * dev, const char * dir, const char * fsname, u32_t fla
 		bdev = NULL;
 	}
 
+//	printf("calloc\r\n");
 	if(!(m = calloc(1, sizeof(struct vfs_mount_t))))
 		return -1;
 
@@ -590,6 +592,8 @@ int vfs_mount(const char * dev, const char * dir, const char * fsname, u32_t fla
 	m->m_fs = fs;
 	m->m_flags = flags & MOUNT_MASK;
 	atomic_set(&m->m_refcnt, 0);
+//	printf("block name, size, cnt:%s,%d,%d\r\n", bdev->name, bdev->blksz, bdev->blkcnt);
+//	printf("strlcpy\r\n");
 	if(strlcpy(m->m_path, dir, sizeof(m->m_path)) >= sizeof(m->m_path))
 	{
 		free(m);
@@ -603,6 +607,7 @@ int vfs_mount(const char * dev, const char * dir, const char * fsname, u32_t fla
 	}
 	else
 	{
+//		printf("vfs_node_acquire\r\n");
 		if(vfs_node_acquire(dir, &n_covered) != 0)
 		{
 			free(m);
@@ -610,6 +615,7 @@ int vfs_mount(const char * dev, const char * dir, const char * fsname, u32_t fla
 		}
 		if(n_covered->v_type != VNT_DIR)
 		{
+//			printf("vfs_node_release\r\n");
 			vfs_node_release(n_covered);
 			free(m);
 			return -1;
@@ -617,6 +623,7 @@ int vfs_mount(const char * dev, const char * dir, const char * fsname, u32_t fla
 	}
 	m->m_covered = n_covered;
 
+//	printf("vfs_node_get\r\n");
 	if(!(n = vfs_node_get(m, "/")))
 	{
 		if(m->m_covered)
@@ -632,8 +639,10 @@ int vfs_mount(const char * dev, const char * dir, const char * fsname, u32_t fla
 	mutex_lock(&m->m_lock);
 	err = m->m_fs->mount(m, dev);
 	mutex_unlock(&m->m_lock);
+//	printf("mount error:%d\r\n", err);
 	if(err != 0)
 	{
+//		printf("vfs_node_release\r\n");
 		vfs_node_release(m->m_root);
 		if(m->m_covered)
 			vfs_node_release(m->m_covered);
@@ -660,6 +669,7 @@ int vfs_mount(const char * dev, const char * dir, const char * fsname, u32_t fla
 			return -1;
 		}
 	}
+//	printf("list_add\r\n");
 	list_add(&m->m_link, &mnt_list);
 	mutex_unlock(&mnt_list_lock);
 
